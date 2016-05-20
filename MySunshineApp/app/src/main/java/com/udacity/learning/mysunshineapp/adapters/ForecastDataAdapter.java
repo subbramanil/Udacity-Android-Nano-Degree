@@ -3,6 +3,7 @@ package com.udacity.learning.mysunshineapp.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +21,6 @@ import com.udacity.learning.mysunshineapp.model.WeatherDesc;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,10 +34,11 @@ import java.util.TimeZone;
 public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapter.ForecastViewHolder> {
 
     private static final String TAG = ForecastDataAdapter.class.getSimpleName();
+    private static final String ICON_BASE_URL = "http://openweathermap.org/img/w/";
+    private static LruCache<String, Bitmap> mMemoryCache = null;
     private final Context context;
     private final LayoutInflater inflater;
     private final List<WeatherData> weatherData;
-    private static LruCache<String, Bitmap> mMemoryCache = null;
     private ForecastItemClickListener itemClickListener;
 
     //region Constructor
@@ -64,6 +65,16 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
 
     //endregion
 
+    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public static Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
     //region Lifecycle methods
     @Override
     public ForecastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -71,13 +82,17 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         return new ForecastViewHolder(view);
     }
 
+    //endregion
+
+    // Interfaces & Classes declaration
+
     @Override
     public void onBindViewHolder(ForecastViewHolder holder, int position) {
         holder.position = position;
         WeatherData data = weatherData.get(position);
 
         Date date = new Date(data.getDt() * 1000);
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        SimpleDateFormat format = new SimpleDateFormat("EEE MMM dd", Locale.US);
         format.setTimeZone(TimeZone.getTimeZone("US/Central"));
 
         holder.dateTextView.setText(format.format(date));
@@ -87,9 +102,12 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         holder.cloudTextView.setText(weatherDesc.getDescription());
         String iconName = weatherDesc.getIcon();
         Bitmap icon = getBitmapFromMemCache(weatherDesc.getMain());
+
+        Uri uri = Uri.parse(ICON_BASE_URL).buildUpon()
+                .appendPath(iconName + ".png").build();
         if (icon == null) {
             Log.d(TAG, "onBindViewHolder: Icon not available; Fetch icons");
-            ThumbnailTask task = new ThumbnailTask(weatherDesc.getMain(), position, holder, "http://openweathermap.org/img/w/" + iconName + ".png");
+            ThumbnailTask task = new ThumbnailTask(weatherDesc.getMain(), position, holder, uri.toString());
             task.execute();
         } else {
             Log.d(TAG, "onBindViewHolder: Icon is already cached; use it");
@@ -102,41 +120,13 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         return weatherData.size();
     }
 
-    //endregion
-
-    // Interfaces & Classes declaration
-
     public interface ForecastItemClickListener {
         void onForecastItemClick(View view, int position);
     }
 
-    public class ForecastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    //endregion
 
-        CardView cv;
-        TextView dateTextView;
-        TextView cloudTextView;
-        TextView maxTempTextView;
-        TextView minTempTextView;
-        ImageView weatherIconView;
-        int position;
-
-        public ForecastViewHolder(View itemView) {
-            super(itemView);
-            cv = (CardView) itemView.findViewById(R.id.list_item_card);
-            dateTextView = (TextView) cv.findViewById(R.id.list_item_date_textview);
-            maxTempTextView = (TextView) cv.findViewById(R.id.list_item_max_temp_textview);
-            minTempTextView = (TextView) cv.findViewById(R.id.list_item_min_temp_textview);
-            cloudTextView = (TextView) cv.findViewById(R.id.list_item_weather_desc_textview);
-            weatherIconView = (ImageView) cv.findViewById(R.id.list_item_weather_imageview);
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (itemClickListener != null) {
-                itemClickListener.onForecastItemClick(v, getPosition());
-            }
-        }
-    }
+    //Util methods
 
     private static class ThumbnailTask extends AsyncTask {
         private int mPosition;
@@ -176,18 +166,32 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         }
     }
 
-    //endregion
+    public class ForecastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    //Util methods
+        CardView cv;
+        TextView dateTextView;
+        TextView cloudTextView;
+        TextView maxTempTextView;
+        TextView minTempTextView;
+        ImageView weatherIconView;
+        int position;
 
-    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (getBitmapFromMemCache(key) == null) {
-            mMemoryCache.put(key, bitmap);
+        public ForecastViewHolder(View itemView) {
+            super(itemView);
+            cv = (CardView) itemView.findViewById(R.id.list_item_card);
+            dateTextView = (TextView) cv.findViewById(R.id.list_item_date_textview);
+            maxTempTextView = (TextView) cv.findViewById(R.id.list_item_max_temp_textview);
+            minTempTextView = (TextView) cv.findViewById(R.id.list_item_min_temp_textview);
+            cloudTextView = (TextView) cv.findViewById(R.id.list_item_weather_desc_textview);
+            weatherIconView = (ImageView) cv.findViewById(R.id.list_item_weather_imageview);
         }
-    }
 
-    public static Bitmap getBitmapFromMemCache(String key) {
-        return mMemoryCache.get(key);
+        @Override
+        public void onClick(View v) {
+            if (itemClickListener != null) {
+                itemClickListener.onForecastItemClick(v, getPosition());
+            }
+        }
     }
 
     //endregion

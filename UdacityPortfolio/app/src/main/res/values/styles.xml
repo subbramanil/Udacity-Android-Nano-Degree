@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/accent</item>
     </style>
 
+    <style name="PortfolioButtonTheme">
+        <item name="android:padding">@dimen/padding_10dp</item>
+        <item name="android:layout_margin">@dimen/margin_10dp</item>
+        <item name="android:background">@color/accent</item>
+    </style>
+
+    <style name="PortfolioCapstoneButtonTheme" parent="PortfolioButtonTheme">
+        <item name="android:background">@color/special</item>
+    </style>
+
 </resources>

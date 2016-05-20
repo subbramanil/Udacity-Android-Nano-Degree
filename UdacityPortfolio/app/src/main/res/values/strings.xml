@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Udacity Portfolio</string>
     <string name="app_list_title">My Nanodegree Apps!</string>
+    <string name="btn_1_title">Popular Movies</string>
+    <string name="btn_2_title">Stock hawk</string>
+    <string name="btn_3_title">Build it Bigger</string>
+    <string name="btn_4_title">Make your app Material</string>
+    <string name="btn_5_title">Go Ubiquitous</string>
+    <string name="btn_6_title">Capstone</string>
 </resources>

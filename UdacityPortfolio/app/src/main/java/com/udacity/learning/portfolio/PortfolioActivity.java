@@ -27,16 +27,13 @@ public class PortfolioActivity extends AppCompatActivity implements AppsAdapter.
 
         // Get View components
         RecyclerView appsListView = (RecyclerView) findViewById(R.id.apps_btn_list);
-
-        if (appsListView != null) {
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            appsListView.setLayoutManager(layoutManager);
-            List<String> appList = new ArrayList<>();
-            Collections.addAll(appList, arrayOfApps);
-            AppsAdapter appsAdapter = new AppsAdapter(this, this, appList);
-            appsListView.setAdapter(appsAdapter);
-        }
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        appsListView.setLayoutManager(layoutManager);
+        List<String> appList = new ArrayList<>();
+        Collections.addAll(appList, arrayOfApps);
+        AppsAdapter appsAdapter = new AppsAdapter(this, this, appList);
+        appsListView.setAdapter(appsAdapter);
     }
 
     //endregion

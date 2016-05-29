@@ -1,11 +1,15 @@
 package com.udacity.learning.mysunshineapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Subbu on 5/20/16.
  */
-public class WeatherData {
+public class WeatherData implements Parcelable {
 
     private long dt;
     private String pressure;
@@ -13,7 +17,29 @@ public class WeatherData {
     private String speed;
     private String clouds;
     private TemperatureData temp;
-    private List<WeatherDesc> weather;
+    private ArrayList<WeatherDesc> weather;
+
+    protected WeatherData(Parcel in) {
+        dt = in.readLong();
+        pressure = in.readString();
+        humidity = in.readString();
+        speed = in.readString();
+        clouds = in.readString();
+        temp = in.readParcelable(TemperatureData.class.getClassLoader());
+        weather = in.createTypedArrayList(WeatherDesc.CREATOR);
+    }
+
+    public static final Creator<WeatherData> CREATOR = new Creator<WeatherData>() {
+        @Override
+        public WeatherData createFromParcel(Parcel in) {
+            return new WeatherData(in);
+        }
+
+        @Override
+        public WeatherData[] newArray(int size) {
+            return new WeatherData[size];
+        }
+    };
 
     public long getDt() {
         return dt;
@@ -59,7 +85,7 @@ public class WeatherData {
         return weather;
     }
 
-    public void setWeather(List<WeatherDesc> weather) {
+    public void setWeather(ArrayList<WeatherDesc> weather) {
         this.weather = weather;
     }
 
@@ -82,5 +108,21 @@ public class WeatherData {
                 ", temp=" + temp +
                 ", weather=" + weather +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeLong(this.dt);
+        parcel.writeString(this.pressure);
+        parcel.writeString(this.humidity);
+        parcel.writeString(this.speed);
+        parcel.writeString(this.clouds);
+        parcel.writeParcelable(this.temp, flags);
+        parcel.writeTypedList(this.weather);
     }
 }

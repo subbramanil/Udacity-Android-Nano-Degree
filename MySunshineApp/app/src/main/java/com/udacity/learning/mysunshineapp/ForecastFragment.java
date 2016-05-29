@@ -1,13 +1,19 @@
 package com.udacity.learning.mysunshineapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -35,6 +41,7 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
     private ForecastData forecastData;
     private ForecastDataAdapter forecastAdapter;
     private List<WeatherData> weatherDataList;
+    private SharedPreferences sharedPreferences;
 
     //region Constructor
     public ForecastFragment() {
@@ -47,6 +54,12 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        setHasOptionsMenu(true);
+
+        sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+
         // Get view components
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         RecyclerView forecastListView = (RecyclerView) rootView.findViewById(R.id.recyclerview_forecast);
@@ -58,12 +71,48 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
         forecastAdapter = new ForecastDataAdapter(getActivity(), ForecastFragment.this, weatherDataList);
         forecastListView.setAdapter(forecastAdapter);
 
-        // Fetch data using Async tasks
-        // TODO: 5/20/16 Get location from the user and pass it to the Async task
-        FetchWeatherForecastTask fetchForecastTask = new FetchWeatherForecastTask("Dallas");
-        fetchForecastTask.execute();
-
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_home, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_refresh) {
+            Log.d(TAG, "onOptionsItemSelected: Refresh the action");
+            updateWeather();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    //endregion
+
+    //region Local methods
+    private void updateWeather() {
+        String location = sharedPreferences.getString(getString(R.string.location_pref_key), "Dallas");
+        String unitsPref = sharedPreferences.getString(getString(R.string.unit_pref_key), "imperial");
+        Log.d(TAG, "onCreateView: user preferred location: " + location + " Units: " + unitsPref);
+        FetchWeatherForecastTask fetchForecastTask = new FetchWeatherForecastTask(location, unitsPref);
+        fetchForecastTask.execute();
     }
     //endregion
 
@@ -71,7 +120,11 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
     @Override
     public void onForecastItemClick(View view, int position) {
         Log.d(TAG, "onForecastItemClick: Selected: " + forecastData.getList().get(position));
-        // TODO: 5/20/16 Show more detailed view
+
+        Intent intent = new Intent(getContext(), WeatherDetailActivity.class);
+        intent.putExtra("selected_weather_data", forecastData.getList().get(position));
+        startActivity(intent);
+
     }
 
     //endregion
@@ -80,11 +133,13 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
 
     public class FetchWeatherForecastTask extends AsyncTask {
 
+        private final String units;
         private String city;
         private Uri uri;
 
-        public FetchWeatherForecastTask(String city) {
+        public FetchWeatherForecastTask(String city, String unitsPref) {
             this.city = city;
+            this.units = unitsPref;
         }
 
         @Override
@@ -93,17 +148,9 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
             super.onPreExecute();
             uri = Uri.parse(BASE_SERVER_URL).buildUpon()
                     .appendQueryParameter("q", city)
-                    .appendQueryParameter("units", "metric")
+                    .appendQueryParameter("units", units)
                     .appendQueryParameter("cnt", "7")
-                    .appendQueryParameter("appid", getResources().getString(R.string.API_KEY)).build();
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            weatherDataList.clear();
-            weatherDataList.addAll(forecastData.getList());
-            forecastAdapter.notifyDataSetChanged();
+                    .appendQueryParameter("appid", BuildConfig.api_key).build();
         }
 
         @Override
@@ -171,8 +218,18 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
                 }
             }
 
-            return null;
+            return forecastData;
         }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            weatherDataList.clear();
+            Log.d(TAG, "onPostExecute: ForeCast Data: " + forecastData);
+            weatherDataList.addAll(forecastData.getList());
+            forecastAdapter.notifyDataSetChanged();
+        }
+
     }
 
     //endregion

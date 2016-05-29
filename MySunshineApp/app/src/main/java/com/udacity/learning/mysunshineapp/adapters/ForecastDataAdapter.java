@@ -184,6 +184,7 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
             minTempTextView = (TextView) cv.findViewById(R.id.list_item_min_temp_textview);
             cloudTextView = (TextView) cv.findViewById(R.id.list_item_weather_desc_textview);
             weatherIconView = (ImageView) cv.findViewById(R.id.list_item_weather_imageview);
+            cv.setOnClickListener(this);
         }
 
         @Override

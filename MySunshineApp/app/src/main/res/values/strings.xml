@@ -1,4 +1,13 @@
 <resources>
-    <string name="app_name">MySunshineApp</string>
-    <string name="API_KEY">dcb4456a3f71a563c046d85d91237301</string>
+    <string name="app_name">My Sunshine App</string>
+    <string name="title_activity_weather_detail">WeatherDetail</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="location_pref_key">location</string>
+    <string name="unit_pref_key">units</string>
+    <string name="pref_default_location">Dallas</string>
+    <string name="pref_user_location">Location</string>
+    <string name="pref_units_default">metric</string>
+    <string name="title_units_preference">Units</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>

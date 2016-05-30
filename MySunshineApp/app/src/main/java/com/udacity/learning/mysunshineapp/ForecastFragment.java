@@ -124,7 +124,6 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
         Intent intent = new Intent(getContext(), WeatherDetailActivity.class);
         intent.putExtra("selected_weather_data", forecastData.getList().get(position));
         startActivity(intent);
-
     }
 
     //endregion

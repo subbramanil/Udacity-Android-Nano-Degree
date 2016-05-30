@@ -16,9 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.udacity.learning.mysunshineapp.model.WeatherData;
 
 /**
@@ -28,6 +30,7 @@ public class WeatherDetailActivityFragment extends Fragment {
 
     private static final String TAG = WeatherDetailActivityFragment.class.getSimpleName();
     private static final String HASH_TAG = "My Sunshine App";
+    private static final String BASE_URL = "http://openweathermap.org/img/w/";
     private WeatherData mWeatherData;
     private ShareActionProvider mShareActionProvider;
 
@@ -54,7 +57,12 @@ public class WeatherDetailActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_weather_detail, container, false);
 
         TextView cloudDetailTextView = (TextView) view.findViewById(R.id.cloud_detail);
-        cloudDetailTextView.setText(mWeatherData.getWeather().get(0).getDescription());
+        ImageView weatherBGImageView = (ImageView) view.findViewById(R.id.weather_bground);
+
+        Picasso.with(getActivity()).load(BASE_URL + mWeatherData.getWeather().get(0).getIcon() + ".png").into(weatherBGImageView);
+
+
+        cloudDetailTextView.setText(mWeatherData.toString());
 
         return view;
     }

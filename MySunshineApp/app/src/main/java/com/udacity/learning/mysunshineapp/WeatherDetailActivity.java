@@ -25,7 +25,6 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private static final String BASE_URL = "http://openweathermap.org/img/w/";
     private static final String TAG = WeatherDetailActivity.class.getSimpleName();
     private WeatherData mWeatherData;
-    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +59,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.action_share);
 
         // Fetch and store ShareActionProvider
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         // like when the user selects a new piece of data they might like to share.
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent());

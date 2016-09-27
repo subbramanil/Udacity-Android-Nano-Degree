@@ -111,8 +111,7 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
         String location = sharedPreferences.getString(getString(R.string.location_pref_key), "Dallas");
         String unitsPref = sharedPreferences.getString(getString(R.string.unit_pref_key), "imperial");
         Log.d(TAG, "onCreateView: user preferred location: " + location + " Units: " + unitsPref);
-        FetchWeatherForecastTask fetchForecastTask = new FetchWeatherForecastTask(location, unitsPref);
-        fetchForecastTask.execute();
+        new FetchWeatherForecastTask(location, unitsPref).execute();
     }
     //endregion
 
@@ -136,7 +135,7 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
         private String city;
         private Uri uri;
 
-        public FetchWeatherForecastTask(String city, String unitsPref) {
+        FetchWeatherForecastTask(String city, String unitsPref) {
             this.city = city;
             this.units = unitsPref;
         }
@@ -180,29 +179,25 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
+                StringBuilder buffer = new StringBuilder();
+                if (inputStream != null) {
+                    reader = new BufferedReader(new InputStreamReader(inputStream));
                 }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
 
                 String line;
-                while ((line = reader.readLine()) != null) {
+                while ((line = reader != null ? reader.readLine() : null) != null) {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                }
                 Gson gson = new Gson();
                 forecastData = gson.fromJson(buffer.toString(), ForecastData.class);
                 Log.d(TAG, "doInBackground: data: " + forecastData);
             } catch (IOException e) {
                 Log.e("PlaceholderFragment", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
+                // If the code didn't successfully get the weather data, there's no point in attempting
                 // to parse it.
             } finally {
                 if (urlConnection != null) {

@@ -46,7 +46,9 @@ public class WeatherDetailActivity extends AppCompatActivity {
 
         Picasso.with(this).load(BASE_URL + mWeatherData.getWeather().get(0).getIcon() + ".png").into(weatherBGImageView);
 
-        cloudDetailTextView.setText(mWeatherData.toString());
+        if (cloudDetailTextView != null) {
+            cloudDetailTextView.setText(mWeatherData.toString());
+        }
 
     }
 

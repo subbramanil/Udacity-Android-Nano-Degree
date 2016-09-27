@@ -65,13 +65,13 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
 
     //endregion
 
-    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    private static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
             mMemoryCache.put(key, bitmap);
         }
     }
 
-    public static Bitmap getBitmapFromMemCache(String key) {
+    private static Bitmap getBitmapFromMemCache(String key) {
         return mMemoryCache.get(key);
     }
 
@@ -81,10 +81,6 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         View view = inflater.inflate(R.layout.list_item_forecast, parent, false);
         return new ForecastViewHolder(view);
     }
-
-    //endregion
-
-    // Interfaces & Classes declaration
 
     @Override
     public void onBindViewHolder(ForecastViewHolder holder, int position) {
@@ -119,6 +115,9 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
     public int getItemCount() {
         return weatherData.size();
     }
+    //endregion
+
+    // Interfaces & Classes declaration
 
     public interface ForecastItemClickListener {
         void onForecastItemClick(View view, int position);
@@ -135,7 +134,7 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         private String iconName;
 
 
-        public ThumbnailTask(String name, int position, ForecastViewHolder holder, String url) {
+        ThumbnailTask(String name, int position, ForecastViewHolder holder, String url) {
             mPosition = position;
             mHolder = holder;
             this.iconURL = url;
@@ -166,7 +165,7 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         }
     }
 
-    public class ForecastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ForecastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         CardView cv;
         TextView dateTextView;
@@ -176,7 +175,7 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         ImageView weatherIconView;
         int position;
 
-        public ForecastViewHolder(View itemView) {
+        ForecastViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.list_item_card);
             dateTextView = (TextView) cv.findViewById(R.id.list_item_date_textview);

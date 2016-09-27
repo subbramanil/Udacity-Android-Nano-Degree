@@ -155,8 +155,7 @@ public class ForecastDataAdapter extends RecyclerView.Adapter<ForecastDataAdapte
         protected Object doInBackground(Object[] params) {
             try {
                 Log.d(TAG, "loadImageFromURL: " + iconURL);
-                Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(iconURL).getContent());
-                return bitmap;
+                return BitmapFactory.decodeStream((InputStream) new URL(iconURL).getContent());
             } catch (Exception e) {
                 Log.e(TAG, "loadImageFromURL: Error in updating icons", e.getCause());
                 e.printStackTrace();

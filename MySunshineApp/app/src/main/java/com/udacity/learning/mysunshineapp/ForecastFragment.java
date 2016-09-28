@@ -38,10 +38,12 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
 
     private static final String TAG = ForecastFragment.class.getSimpleName();
     private static final String BASE_SERVER_URL = "http://api.openweathermap.org/data/2.5/forecast/daily";
+
+    private SharedPreferences sharedPreferences;
+
     private ForecastData forecastData;
     private ForecastDataAdapter forecastAdapter;
     private List<WeatherData> weatherDataList;
-    private SharedPreferences sharedPreferences;
 
     //region Constructor
     public ForecastFragment() {
@@ -102,6 +104,16 @@ public class ForecastFragment extends Fragment implements ForecastDataAdapter.Fo
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     //endregion

@@ -26,6 +26,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private static final String TAG = WeatherDetailActivity.class.getSimpleName();
     private WeatherData mWeatherData;
 
+    //region Life Cycle methods
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +35,11 @@ public class WeatherDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // get the received intent and obtain the weather data passed from the SunshineHomeActivity
+        // Get the view components
+        TextView cloudDetailTextView = (TextView) findViewById(R.id.cloud_detail);
+        ImageView weatherBGImageView = (ImageView) findViewById(R.id.weather_bground);
+
+        // Get the received intent and obtain the weather data passed from the SunshineHomeActivity
         Intent recdIntent = getIntent();
         if (recdIntent != null) {
             mWeatherData = recdIntent.getParcelableExtra("selected_weather_data");
@@ -41,16 +47,17 @@ public class WeatherDetailActivity extends AppCompatActivity {
             Toast.makeText(this, mWeatherData.toString(), Toast.LENGTH_SHORT).show();
         }
 
-        TextView cloudDetailTextView = (TextView) findViewById(R.id.cloud_detail);
-        ImageView weatherBGImageView = (ImageView) findViewById(R.id.weather_bground);
-
+        // Set values to View components
         Picasso.with(this).load(BASE_URL + mWeatherData.getWeather().get(0).getIcon() + ".png").into(weatherBGImageView);
-
         if (cloudDetailTextView != null) {
             cloudDetailTextView.setText(mWeatherData.toString());
         }
 
     }
+
+    //endregion
+
+    //region Overridden/Implemented methods
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -97,6 +104,15 @@ public class WeatherDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //endregion
+
+    //region Local Methods
+
+    /**
+     * Method to create intent for sharing
+     *
+     * @return shareIntent: Intent
+     */
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -105,6 +121,11 @@ public class WeatherDetailActivity extends AppCompatActivity {
         return shareIntent;
     }
 
+    /**
+     * Method to show the location in the Map
+     *
+     * @param geoLocation: URI of the location to be located
+     */
     public void showMap(Uri geoLocation) {
         Intent intent = new Intent(Intent.ACTION_VIEW, geoLocation);
         intent.setData(geoLocation);
@@ -113,4 +134,5 @@ public class WeatherDetailActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+    //endregion
 }
